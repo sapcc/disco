@@ -3,7 +3,7 @@ module github.com/sapcc/kubernetes-operators/disco
 go 1.23
 
 require (
-	github.com/go-logr/logr v1.4.1
+	github.com/go-logr/logr v1.4.2
 	github.com/gophercloud/gophercloud v1.11.0
 	github.com/onsi/ginkgo/v2 v2.17.1
 	github.com/onsi/gomega v1.32.0
