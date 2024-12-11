@@ -20,8 +20,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	"github.com/sapcc/kubernetes-operators/disco/pkg/disco"
-	util "github.com/sapcc/kubernetes-operators/disco/pkg/util"
+	"github.com/sapcc/disco/pkg/disco"
+	util "github.com/sapcc/disco/pkg/util"
 )
 
 func (r *Record) SetupWebhookWithManager(mgr ctrl.Manager) error {

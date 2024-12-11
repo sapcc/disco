@@ -36,10 +36,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	discov1 "github.com/sapcc/kubernetes-operators/disco/api/v1"
-	"github.com/sapcc/kubernetes-operators/disco/pkg/clientutil"
-	"github.com/sapcc/kubernetes-operators/disco/pkg/disco"
-	util "github.com/sapcc/kubernetes-operators/disco/pkg/util"
+	discov1 "github.com/sapcc/disco/api/v1"
+	"github.com/sapcc/disco/pkg/clientutil"
+	"github.com/sapcc/disco/pkg/disco"
+	util "github.com/sapcc/disco/pkg/util"
 )
 
 const (

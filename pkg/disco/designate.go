@@ -32,7 +32,7 @@ import (
 	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	util "github.com/sapcc/kubernetes-operators/disco/pkg/util"
+	util "github.com/sapcc/disco/pkg/util"
 )
 
 // headersForAllDesignateRequests are headers set on all designate requests.

@@ -29,7 +29,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	discov1 "github.com/sapcc/kubernetes-operators/disco/api/v1"
+	discov1 "github.com/sapcc/disco/api/v1"
 	//+kubebuilder:scaffold:imports
 )
 

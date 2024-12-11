@@ -1,4 +1,4 @@
-module github.com/sapcc/kubernetes-operators/disco
+module github.com/sapcc/disco
 
 go 1.23
 

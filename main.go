@@ -33,10 +33,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	discov1 "github.com/sapcc/kubernetes-operators/disco/api/v1"
-	"github.com/sapcc/kubernetes-operators/disco/controllers"
-	"github.com/sapcc/kubernetes-operators/disco/pkg/disco"
-	"github.com/sapcc/kubernetes-operators/disco/pkg/version"
+	discov1 "github.com/sapcc/disco/api/v1"
+	"github.com/sapcc/disco/controllers"
+	"github.com/sapcc/disco/pkg/disco"
+	"github.com/sapcc/disco/pkg/version"
 	//+kubebuilder:scaffold:imports
 )
 

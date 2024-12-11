@@ -2,7 +2,7 @@ domain: stable.sap.cc
 layout:
 - go.kubebuilder.io/v3
 projectName: disco
-repo: github.com/sapcc/kubernetes-operators/disco
+repo: github.com/sapcc/disco
 resources:
 - api:
     crdVersion: v1
@@ -11,7 +11,7 @@ resources:
   domain: stable.sap.cc
   group: disco
   kind: Record
-  path: github.com/sapcc/kubernetes-operators/disco/api/v1
+  path: github.com/sapcc/disco/api/v1
   version: v1
   webhooks:
     defaulting: true

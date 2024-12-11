@@ -73,7 +73,7 @@ build: GIT_STATE   = $(shell if git diff --quiet; then echo clean; else echo dir
 build: BUILD_DATE  = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 build: generate fmt vet ## Build disco binary.
 	@mkdir -p bin/$(OS)
-	go build -mod=readonly -ldflags "-s -w -X github.com/sapcc/kubernetes-operators/disco/pkg/version.GitBranch=$(GIT_BRANCH) -X github.com/sapcc/kubernetes-operators/disco/pkg/version.GitCommit=$(GIT_COMMIT) -X github.com/sapcc/kubernetes-operators/disco/pkg/version.GitState=$(GIT_STATE) -X github.com/sapcc/kubernetes-operators/disco/pkg/version.BuildDate=$(BUILD_DATE)" -o bin/$(OS)/disco main.go
+	go build -mod=readonly -ldflags "-s -w -X github.com/sapcc/disco/pkg/version.GitBranch=$(GIT_BRANCH) -X github.com/sapcc/disco/pkg/version.GitCommit=$(GIT_COMMIT) -X github.com/sapcc/disco/pkg/version.GitState=$(GIT_STATE) -X github.com/sapcc/disco/pkg/version.BuildDate=$(BUILD_DATE)" -o bin/$(OS)/disco main.go
 
 .PHONY: run
 run: manifests generate fmt vet ## Run a controller from your host.
