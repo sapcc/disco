@@ -2,8 +2,7 @@ name: Docker Build on PR
 
 on:
   pull_request:
-    branches-ignore:
-      - main
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   build:
