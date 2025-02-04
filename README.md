@@ -1,6 +1,8 @@
 # Designate IngresS Cname Operator (DISCO)
 
 [![REUSE status](https://api.reuse.software/badge/github.com/sapcc/disco)](https://api.reuse.software/info/github.com/sapcc/disco)
+[![GitHub Container Registry](https://img.shields.io/badge/GitHub%20Container%20Registry-disco-blue?logo=github&logoColor=white&style=flat)](https://github.com/sapcc/disco/pkgs/container/disco)
+
 
 The DISCO operator automatically discovers Ingresses in the Kubernetes cluster and creates corresponding CNAMEs in OpenStack Desginate.
 
