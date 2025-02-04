@@ -90,7 +90,7 @@ docker-push-mac: test ## Build docker image with the manager.
 	docker buildx build --platform linux/amd64 -t ${IMG_REPO}:${GIT_COMMIT} . --push
 
 .PHONY: docker-push
-docker-build: GIT_COMMIT  = $(shell git rev-parse --short HEAD)
+docker-push: GIT_COMMIT  = $(shell git rev-parse --short HEAD)
 docker-push: ## Push docker image with the manager.
 	docker push ${IMG_REPO}:${GIT_COMMIT}
 	docker tag ${IMG_REPO}:${GIT_COMMIT} ${IMG_REPO}:latest && docker push ${IMG_REPO}:latest
