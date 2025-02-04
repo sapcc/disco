@@ -17,34 +17,46 @@ limitations under the License.
 package v1
 
 import (
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/webhook"
-
+	"context"
+	"fmt"
 	"github.com/sapcc/disco/pkg/disco"
 	util "github.com/sapcc/disco/pkg/util"
+	"k8s.io/apimachinery/pkg/runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
-func (r *Record) SetupWebhookWithManager(mgr ctrl.Manager) error {
+type RecordDefaulter struct {
+}
+
+func SetupWebhookWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewWebhookManagedBy(mgr).
-		For(r).
+		For(&Record{}).
+		WithDefaulter(&RecordDefaulter{}).
 		Complete()
 }
 
 //+kubebuilder:webhook:path=/mutate-disco-stable-sap-cc-v1-record,mutating=true,failurePolicy=fail,sideEffects=None,groups=disco.stable.sap.cc,resources=records,verbs=create;update,versions=v1,name=mrecord.kb.io,admissionReviewVersions=v1
 
-var _ webhook.Defaulter = &Record{}
+var _ admission.CustomDefaulter = &RecordDefaulter{}
 
 // Default implements webhook.Defaulter so a webhook will be registered for the type
-func (r *Record) Default() {
-	if r.Spec.ZoneName == "" {
-		r.Spec.ZoneName = util.EnsureFQDN(disco.DefaultDNSZoneName)
+func (rd *RecordDefaulter) Default(_ context.Context, obj runtime.Object) error {
+	record, ok := obj.(*Record)
+	if !ok {
+		return fmt.Errorf("expected an Record object but got %T", obj)
+	}
+
+	if record.Spec.ZoneName == "" {
+		record.Spec.ZoneName = util.EnsureFQDN(disco.DefaultDNSZoneName)
 	}
 
 	// Ensure a FQDN for CNAME records.
-	if r.Spec.Type == RecordTypeCNAME {
-		r.Spec.Record = util.EnsureFQDN(r.Spec.Record)
-		for idx, host := range r.Spec.Hosts {
-			r.Spec.Hosts[idx] = util.EnsureFQDN(host)
+	if record.Spec.Type == RecordTypeCNAME {
+		record.Spec.Record = util.EnsureFQDN(record.Spec.Record)
+		for idx, host := range record.Spec.Hosts {
+			record.Spec.Hosts[idx] = util.EnsureFQDN(host)
 		}
 	}
+	return nil
 }
