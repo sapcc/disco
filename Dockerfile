@@ -27,6 +27,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 make build
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot
 LABEL source_repository="https://github.com/sapcc/disco"
+LABEL org.opencontainers.image.source="https://github.com/sapcc/disco"
 WORKDIR /
 COPY --from=builder /workspace/bin/linux/disco .
 USER 65532:65532
