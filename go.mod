@@ -7,6 +7,7 @@ toolchain go1.23.6
 require (
 	github.com/go-logr/logr v1.4.2
 	github.com/gophercloud/gophercloud v1.14.1
+	github.com/gophercloud/gophercloud/v2 v2.4.0
 	github.com/onsi/ginkgo/v2 v2.22.2
 	github.com/onsi/gomega v1.36.2
 	github.com/pkg/errors v0.9.1
