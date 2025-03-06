@@ -144,8 +144,8 @@ func (r *RecordReconciler) reconcileRecord(ctx context.Context, record *discov1.
 	}
 
 	records := strings.FieldsFunc(rec, splitFunc)
-	if rec := records; len(rec) > 0 {
-		records = rec
+	if len(records) == 0 {
+		return fmt.Errorf("record %s/%s has no records", record.Namespace, record.Name)
 	}
 
 	for _, host := range record.Spec.Hosts {
