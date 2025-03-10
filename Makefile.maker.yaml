@@ -50,3 +50,51 @@ renovate:
   assignees:
     - kengou
     - abhijith-darshan
+  customManagers:
+    - customType: "regex"
+      description: "Bump envtest version in the Makefile"
+      fileMatch: [
+        "^Makefile$"
+      ]
+      matchStrings: [
+        "ENVTEST_K8S_VERSION\\s*\\?=\\s*(?<currentValue>.?(?:\\d+\\.){0,2}\\d+)"
+      ]
+      datasourceTemplate: "github-tags"
+      depNameTemplate: "kubernetes-sigs/controller-tools"
+      extractVersionTemplate: "^envtest.v(?<version>.*)$"
+    - customType: "regex"     
+      description: "Bump kustomize version in the Makefile"
+      fileMatch: [
+        "^Makefile$"
+      ]
+      matchStrings: [
+        "KUSTOMIZE_VERSION\\s*\\?=\\s*(?<currentValue>.?(?:\\d+\\.){0,2}\\d+)"
+      ]
+      datasourceTemplate: "github-tags"
+      depNameTemplate: "kubernetes-sigs/kustomize"
+      extractVersionTemplate: "^kustomize/v(?<version>.*)$"
+    - customType: "regex"
+      description: "Bump controller tools version in the Makefile"
+      fileMatch: [
+        "^Makefile$"
+      ]
+      matchStrings: [
+        "CONTROLLER_TOOLS_VERSION\\s*\\?=\\s*(?<currentValue>.?(?:\\d+\\.){0,2}\\d+)"
+      ]
+      datasourceTemplate: "github-tags"
+      depNameTemplate: "kubernetes-sigs/controller-tools"
+      extractVersionTemplate: "^v(?<version>.*)$"
+  packageRules:
+    - matchPackageNames: [
+        "github-actions"
+      ]
+      groupName: "github actions"
+      matchUpdateTypes: [
+        "major",
+        "minor",
+        "patch"
+      ]
+      minimumReleaseAge: "14 days"
+      extends: [
+        "helpers:pinGitHubActionDigests"
+      ]
