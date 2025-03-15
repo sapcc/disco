@@ -74,7 +74,7 @@ build: GIT_BRANCH  = $(shell git rev-parse --abbrev-ref HEAD)
 build: GIT_COMMIT  = $(shell git rev-parse --short HEAD)
 build: GIT_STATE   = $(shell if git diff --quiet; then echo clean; else echo dirty; fi)
 build: BUILD_DATE  = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-build: generate fmt vet ## Build disco binary.
+build:
 	@mkdir -p bin/$(OS)
 	go build -mod=readonly -ldflags "-s -w -X github.com/sapcc/disco/pkg/version.GitBranch=$(GIT_BRANCH) -X github.com/sapcc/disco/pkg/version.GitCommit=$(GIT_COMMIT) -X github.com/sapcc/disco/pkg/version.GitState=$(GIT_STATE) -X github.com/sapcc/disco/pkg/version.BuildDate=$(BUILD_DATE)" -o bin/$(OS)/disco main.go
 
