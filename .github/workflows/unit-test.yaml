@@ -12,6 +12,6 @@ jobs:
           go-version-file: 'go.mod'
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: lint & test
-        run: make tests
+        run: make test
       - name: build
         run: make build-all
