@@ -144,7 +144,7 @@ func (c *DNSV2Client) DeleteRecordsetByZoneAndNameIgnoreNotFound(ctx context.Con
 	return nil
 }
 
-func (c *DNSV2Client) deleteRecordsetIgnoreNotFound(_ context.Context, zoneID string, rrsetID string) (r recordsets.DeleteResult) {
+func (c *DNSV2Client) deleteRecordsetIgnoreNotFound(_ context.Context, zoneID, rrsetID string) (r recordsets.DeleteResult) {
 	resp, err := c.client.Delete(c.client.ServiceURL("zones", zoneID, "recordsets", rrsetID), &gophercloud.RequestOpts{
 		OkCodes: []int{202, 404},
 	})

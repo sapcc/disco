@@ -84,7 +84,7 @@ func (r *RecordReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 func (r *RecordReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	ctx = log.IntoContext(ctx, r.logger.WithValues("record", req.NamespacedName.String()))
+	ctx = log.IntoContext(ctx, r.logger.WithValues("record", req.String()))
 
 	var record = new(discov1.Record)
 	if err := r.c.Get(ctx, req.NamespacedName, record); err != nil {
@@ -169,9 +169,7 @@ func (r *RecordReconciler) reconcileRecord(ctx context.Context, record *discov1.
 			err := r.dnsV2Client.UpdateRecordset(recordset.ZoneID, recordset.ID, record.Spec.Description, defaultRecordTTL, records)
 			return err
 		}
-
 	}
-
 	return nil
 }
 
@@ -232,7 +230,7 @@ func (r *RecordReconciler) getReadyConditionForRecord(ctx context.Context, recor
 	}
 	readyCondition.Status = metav1.ConditionTrue
 	readyCondition.Reason = "recordset is ready"
-	readyCondition.Message = fmt.Sprintf("recordset is in status %s", recordset.Status)
+	readyCondition.Message = "recordset is in status " + recordset.Status
 	return readyCondition
 }
 

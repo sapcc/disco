@@ -11,8 +11,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-const debugLogLevel = 1
-
 // OperationResult is the action result of a CreateOrUpdate call
 type OperationResult string
 
@@ -57,6 +55,9 @@ func PatchStatus(ctx context.Context, c client.Client, obj client.Object, mutate
 
 func patch(ctx context.Context, c client.Client, obj client.Object, mutate func() error, status bool) (OperationResult, error) {
 	before := obj.DeepCopyObject().(client.Object)
+	if before != nil {
+		return OperationResultNone, fmt.Errorf("cannot patch object %s because it is being created", obj.GetName())
+	}
 	if err := mutate(); err != nil {
 		return OperationResultNone, errors.Wrap(err, "mutating object failed")
 	}

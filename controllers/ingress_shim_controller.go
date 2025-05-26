@@ -73,7 +73,7 @@ func (r *IngressShimReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 func (r *IngressShimReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	ctx = log.IntoContext(ctx, r.logger.WithValues("ingress", req.NamespacedName.String()))
+	ctx = log.IntoContext(ctx, r.logger.WithValues("ingress", req.String()))
 
 	var ingress = new(networkingv1.Ingress)
 	if err := r.c.Get(ctx, req.NamespacedName, ingress); err != nil {
