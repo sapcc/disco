@@ -4,7 +4,6 @@ go 1.23.6
 
 require (
 	github.com/go-logr/logr v1.4.2
-	github.com/gophercloud/gophercloud v1.14.1
 	github.com/gophercloud/gophercloud/v2 v2.7.0
 	github.com/onsi/ginkgo/v2 v2.23.4
 	github.com/onsi/gomega v1.37.0
