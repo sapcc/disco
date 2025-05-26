@@ -74,6 +74,9 @@ func NewDNSV2ClientFromENV() (*DNSV2Client, error) {
 		provider,
 		gophercloud.EndpointOpts{Region: os.Getenv("OS_REGION_NAME"), Availability: gophercloud.AvailabilityPublic},
 	)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not initialize openstack DNS v2 client")
+	}
 	if c.MoreHeaders == nil {
 		c.MoreHeaders = make(map[string]string, 0)
 	}
