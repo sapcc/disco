@@ -24,7 +24,7 @@ import (
 	"time"
 
 	"github.com/go-logr/logr"
-	"github.com/gophercloud/gophercloud/openstack/dns/v2/recordsets"
+	"github.com/gophercloud/gophercloud/v2/openstack/dns/v2/recordsets"
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -47,6 +47,10 @@ const (
 	defaultRecordTTL = 1800
 )
 
+var (
+	ctx = context.Background()
+)
+
 // RecordReconciler reconciles a Record object
 type RecordReconciler struct {
 	ReconciliationInterval time.Duration
@@ -66,7 +70,7 @@ func (r *RecordReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		return errors.New("reconciliation interval must not be 0")
 	}
 
-	dnsV2Client, err := disco.NewDNSV2ClientFromENV()
+	dnsV2Client, err := disco.NewDNSV2ClientFromENV(ctx)
 	if err != nil {
 		return err
 	}
@@ -166,7 +170,7 @@ func (r *RecordReconciler) reconcileRecord(ctx context.Context, record *discov1.
 		if !isDesignateRecordsetEqualToRecord(recordset, record, host) {
 			log.FromContext(ctx).Info("updating record in designate",
 				"zone", zone.Name, "name", host, "type", record.Spec.Type, "records", records[0], "ttl", defaultRecordTTL)
-			err := r.dnsV2Client.UpdateRecordset(recordset.ZoneID, recordset.ID, record.Spec.Description, defaultRecordTTL, records)
+			err := r.dnsV2Client.UpdateRecordset(ctx, recordset.ZoneID, recordset.ID, record.Spec.Description, defaultRecordTTL, records)
 			return err
 		}
 	}

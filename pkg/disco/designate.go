@@ -22,12 +22,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack"
-	"github.com/gophercloud/gophercloud/openstack/dns/v2/recordsets"
-	"github.com/gophercloud/gophercloud/openstack/dns/v2/zones"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
-	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud/v2"
+	"github.com/gophercloud/gophercloud/v2/openstack"
+	"github.com/gophercloud/gophercloud/v2/openstack/dns/v2/recordsets"
+	"github.com/gophercloud/gophercloud/v2/openstack/dns/v2/zones"
+	"github.com/gophercloud/gophercloud/v2/openstack/identity/v3/tokens"
+	"github.com/gophercloud/gophercloud/v2/pagination"
 	"github.com/pkg/errors"
 	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -46,7 +46,7 @@ type DNSV2Client struct {
 	client *gophercloud.ServiceClient
 }
 
-func NewDNSV2ClientFromENV() (*DNSV2Client, error) {
+func NewDNSV2ClientFromENV(ctx context.Context) (*DNSV2Client, error) {
 	opts := &tokens.AuthOptions{
 		IdentityEndpoint: os.Getenv("OS_AUTH_URL"),
 		Username:         os.Getenv("OS_USERNAME"),
@@ -64,7 +64,7 @@ func NewDNSV2ClientFromENV() (*DNSV2Client, error) {
 	}
 	provider.UseTokenLock()
 
-	if err := openstack.AuthenticateV3(provider, opts, gophercloud.EndpointOpts{}); err != nil {
+	if err := openstack.AuthenticateV3(ctx, provider, opts, gophercloud.EndpointOpts{}); err != nil {
 		return nil, errors.Wrap(err, "openstack authentication failed")
 	}
 	if provider.TokenID == "" {
@@ -118,7 +118,7 @@ func (c *DNSV2Client) GetRecordsetByZoneAndName(ctx context.Context, zoneID, rec
 func (c *DNSV2Client) CreateRecordset(ctx context.Context, zoneID, name, rsType, description string, records []string, recordsetTTL int) error {
 	log.FromContext(ctx).V(5).Info("creating recordset",
 		"zoneID", zoneID, "name", name, "type", rsType, "records", strings.Join(records, ","))
-	_, err := recordsets.Create(c.client, zoneID, recordsets.CreateOpts{
+	_, err := recordsets.Create(ctx, c.client, zoneID, recordsets.CreateOpts{
 		Name:        util.EnsureFQDN(name),
 		Description: description,
 		Records:     records,
@@ -147,16 +147,16 @@ func (c *DNSV2Client) DeleteRecordsetByZoneAndNameIgnoreNotFound(ctx context.Con
 	return nil
 }
 
-func (c *DNSV2Client) deleteRecordsetIgnoreNotFound(_ context.Context, zoneID, rrsetID string) (r recordsets.DeleteResult) {
-	resp, err := c.client.Delete(c.client.ServiceURL("zones", zoneID, "recordsets", rrsetID), &gophercloud.RequestOpts{
+func (c *DNSV2Client) deleteRecordsetIgnoreNotFound(ctx context.Context, zoneID, rrsetID string) (r recordsets.DeleteResult) {
+	resp, err := c.client.Delete(ctx, c.client.ServiceURL("zones", zoneID, "recordsets", rrsetID), &gophercloud.RequestOpts{
 		OkCodes: []int{202, 404},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
-func (c *DNSV2Client) UpdateRecordset(zoneID, recordsetID, description string, recordsetTTL int, records []string) error {
-	_, err := recordsets.Update(c.client, zoneID, recordsetID, recordsets.UpdateOpts{
+func (c *DNSV2Client) UpdateRecordset(ctx context.Context, zoneID, recordsetID, description string, recordsetTTL int, records []string) error {
+	_, err := recordsets.Update(ctx, c.client, zoneID, recordsetID, recordsets.UpdateOpts{
 		Description: &description,
 		TTL:         &recordsetTTL,
 		Records:     records,
@@ -168,7 +168,7 @@ func (c *DNSV2Client) listZones(ctx context.Context, listOpts zones.ListOpts) ([
 	log.FromContext(ctx).V(5).Info("listing zones", "listOpts", listOpts)
 	zoneList := make([]zones.Zone, 0)
 	pager := zones.List(c.client, listOpts)
-	if err := pager.EachPage(func(page pagination.Page) (bool, error) {
+	if err := pager.EachPage(ctx, func(ctx context.Context, page pagination.Page) (bool, error) {
 		zonesPerPage, err := zones.ExtractZones(page)
 		if err != nil {
 			return false, err
@@ -185,7 +185,7 @@ func (c *DNSV2Client) listRecordsets(ctx context.Context, zoneID, recordsetName 
 	log.FromContext(ctx).V(5).Info("listing recordsets", "zoneID", zoneID, "name", recordsetName)
 	recordsetList := make([]recordsets.RecordSet, 0)
 	pager := recordsets.ListByZone(c.client, zoneID, recordsets.ListOpts{ZoneID: zoneID, Name: util.EnsureFQDN(recordsetName)})
-	if err := pager.EachPage(func(page pagination.Page) (bool, error) {
+	if err := pager.EachPage(ctx, func(ctx context.Context, page pagination.Page) (bool, error) {
 		recordsetsPerPage, err := recordsets.ExtractRecordSets(page)
 		if err != nil {
 			return false, err
