@@ -8,6 +8,8 @@ ENVTEST_K8S_VERSION = 1.28
 ## Tool Versions
 KUSTOMIZE_VERSION ?= 5.4.1
 CONTROLLER_TOOLS_VERSION ?= 0.14.0
+GOLINT_VERSION ?= 2.1.6
+GINKGOLINTER_VERSION ?= 0.19.1
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -137,6 +139,17 @@ $(LOCALBIN):
 KUSTOMIZE ?= $(LOCALBIN)/kustomize
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 ENVTEST ?= $(LOCALBIN)/setup-envtest
+GOLINT ?= $(LOCALBIN)/golangci-lint
+
+.PHONY: lint
+lint: golint
+	$(GOLINT) run -v --timeout 5m	
+
+.PHONY: golint
+golint: $(GOLINT)
+$(GOLINT): $(LOCALBIN)
+	GOBIN=$(LOCALBIN) go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v$(GOLINT_VERSION)
+	GOBIN=$(LOCALBIN) go install github.com/nunnatsa/ginkgolinter/cmd/ginkgolinter@v$(GINKGOLINTER_VERSION)
 
 KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
 .PHONY: kustomize
@@ -154,9 +167,29 @@ envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
 $(ENVTEST): $(LOCALBIN)
 	GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
 
-install-go-licence-detector: FORCE
+install-go-licence-detector:
 	@if ! hash go-licence-detector 2>/dev/null; then printf "\e[1;36m>> Installing go-licence-detector (this may take a while)...\e[0m\n"; go install go.elastic.co/go-licence-detector@latest; fi
 
-check-dependency-licenses: FORCE install-go-licence-detector
+check-dependency-licenses: install-go-licence-detector
 	@printf "\e[1;36m>> go-licence-detector\e[0m\n"
 	@go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules .license-scan-rules.json -overrides .license-scan-overrides.jsonl
+
+GO_TESTENV =
+GO_BUILDFLAGS =
+GO_LDFLAGS =
+# which packages to test with test runner
+GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./...)
+ifeq ($(GO_TESTPKGS),)
+GO_TESTPKGS := ./...
+endif
+# which packages to measure coverage for
+GO_COVERPKGS := $(shell go list ./...)
+# to get around weird Makefile syntax restrictions, we need variables containing nothing, a space and comma
+null :=
+space := $(null) $(null)
+comma := ,
+
+build/cover.out: build
+	test -d build || mkdir build
+	@printf "\e[1;36m>> Running tests\e[0m\n"
+	@env $(GO_TESTENV) go test -shuffle=on -p 1 -coverprofile=$@ $(GO_BUILDFLAGS) -ldflags "-s -w -X github.com/sapcc/kube-fip-controller/pkg/version.Revision=$(GIT_REVISION) -X github.com/sapcc/kube-fip-controller/pkg/version.Branch=$(GIT_BRANCH) -X github.com/sapcc/kube-fip-controller/pkg/version.BuildDate=$(BUILD_DATE) -X github.com/sapcc/kube-fip-controller/pkg/version.Version=$(VERSION)" -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -59,7 +58,7 @@ func main() {
 
 		fileName := filepath.Join(outPath, dir, fmt.Sprintf("%s.yaml", name))
 		fmt.Printf("writing file %s\n", fileName)
-		err = ioutil.WriteFile(fileName, p, 0644)
+		err = os.WriteFile(fileName, p, 0644)
 		handleError(err)
 	}
 }

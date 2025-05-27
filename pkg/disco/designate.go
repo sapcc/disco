@@ -74,6 +74,9 @@ func NewDNSV2ClientFromENV(ctx context.Context) (*DNSV2Client, error) {
 		provider,
 		gophercloud.EndpointOpts{Region: os.Getenv("OS_REGION_NAME"), Availability: gophercloud.AvailabilityPublic},
 	)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not initialize openstack DNS v2 client")
+	}
 	if c.MoreHeaders == nil {
 		c.MoreHeaders = make(map[string]string, 0)
 	}
@@ -144,7 +147,7 @@ func (c *DNSV2Client) DeleteRecordsetByZoneAndNameIgnoreNotFound(ctx context.Con
 	return nil
 }
 
-func (c *DNSV2Client) deleteRecordsetIgnoreNotFound(ctx context.Context, zoneID string, rrsetID string) (r recordsets.DeleteResult) {
+func (c *DNSV2Client) deleteRecordsetIgnoreNotFound(ctx context.Context, zoneID, rrsetID string) (r recordsets.DeleteResult) {
 	resp, err := c.client.Delete(ctx, c.client.ServiceURL("zones", zoneID, "recordsets", rrsetID), &gophercloud.RequestOpts{
 		OkCodes: []int{202, 404},
 	})

@@ -68,7 +68,7 @@ func (r *ServiceShimReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 func (r *ServiceShimReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	ctx = log.IntoContext(ctx, r.logger.WithValues("service", req.NamespacedName.String()))
+	ctx = log.IntoContext(ctx, r.logger.WithValues("service", req.String()))
 
 	var svc = new(corev1.Service)
 	if err := r.c.Get(ctx, req.NamespacedName, svc); err != nil {
