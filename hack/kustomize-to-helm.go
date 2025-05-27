@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"gopkg.in/yaml.v2"
+	"github.com/goccy/go-yaml"
 )
 
 func main() {
@@ -23,7 +23,6 @@ func main() {
 	}
 
 	dec := yaml.NewDecoder(bufio.NewReader(os.Stdin))
-	dec.SetStrict(true)
 	for {
 		data := map[string]interface{}{}
 		if err := dec.Decode(&data); err != nil {
