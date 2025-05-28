@@ -10,7 +10,7 @@ name: Container Registry GHCR
 "on":
   push:
     branches:
-      - master
+      - main
     paths:
       - api/**
       - controllers/**
