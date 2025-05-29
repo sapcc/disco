@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/go-logr/logr v1.4.2
-	github.com/goccy/go-yaml v1.17.1
+	github.com/goccy/go-yaml v1.18.0
 	github.com/gophercloud/gophercloud/v2 v2.7.0
 	github.com/onsi/ginkgo/v2 v2.23.4
 	github.com/onsi/gomega v1.37.0
