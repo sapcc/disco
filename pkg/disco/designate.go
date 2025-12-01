@@ -19,6 +19,7 @@ package disco
 import (
 	"context"
 	"fmt"
+	"maps"
 	"os"
 	"strings"
 
@@ -78,11 +79,9 @@ func NewDNSV2ClientFromENV(ctx context.Context) (*DNSV2Client, error) {
 		return nil, errors.Wrap(err, "could not initialize openstack DNS v2 client")
 	}
 	if c.MoreHeaders == nil {
-		c.MoreHeaders = make(map[string]string, 0)
+		c.MoreHeaders = make(map[string]string, len(headersForAllDesignateRequests))
 	}
-	for k, v := range headersForAllDesignateRequests {
-		c.MoreHeaders[k] = v
-	}
+	maps.Copy(c.MoreHeaders, headersForAllDesignateRequests)
 	return &DNSV2Client{client: c}, nil
 }
 
