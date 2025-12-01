@@ -26,7 +26,6 @@ goReleaser:
 githubWorkflow:
   ci:
     enabled: true
-    coveralls: false
   pushContainerToGhcr:
     enabled: true
     platforms: "linux/amd64,linux/arm64"
@@ -43,7 +42,7 @@ githubWorkflow:
     enabled: true
 
 makefile:
-  enabled: false
+  enabled: true
 
 renovate:
   enabled: true
