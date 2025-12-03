@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company
+// SPDX-License-Identifier: Apache-2.0
+
 package clientutil
 
 import (
@@ -54,7 +57,7 @@ func PatchStatus(ctx context.Context, c client.Client, obj client.Object, mutate
 }
 
 func patch(ctx context.Context, c client.Client, obj client.Object, mutate func() error, status bool) (OperationResult, error) {
-	before := obj.DeepCopyObject().(client.Object) //nolint:errcheck
+	before := obj.DeepCopyObject().(client.Object)
 	if err := mutate(); err != nil {
 		return OperationResultNone, errors.Wrap(err, "mutating object failed")
 	}

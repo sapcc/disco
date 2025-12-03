@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company
+// SPDX-License-Identifier: Apache-2.0
+
 package main
 
 import (
@@ -23,7 +26,7 @@ func main() {
 
 	dec := yaml.NewDecoder(bufio.NewReader(os.Stdin))
 	for {
-		data := map[string]interface{}{}
+		data := map[string]any{}
 		if err := dec.Decode(&data); err != nil {
 			if err.Error() == "EOF" {
 				break
@@ -35,7 +38,7 @@ func main() {
 		if !ok {
 			continue
 		}
-		metadataMap, ok := metadata.(map[interface{}]interface{})
+		metadataMap, ok := metadata.(map[any]any)
 		if !ok {
 			continue
 		}
