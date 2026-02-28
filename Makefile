@@ -6,8 +6,8 @@ IMG ?= ${IMG_REPO}:${IMG_TAG}
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.28
 ## Tool Versions
-KUSTOMIZE_VERSION ?= 5.6.0
-CONTROLLER_TOOLS_VERSION ?= 0.18.0
+KUSTOMIZE_VERSION ?= 5.8.1
+CONTROLLER_TOOLS_VERSION ?= 0.20.1
 GOLINT_VERSION ?= 2.1.6
 GINKGOLINTER_VERSION ?= 0.19.1
 
