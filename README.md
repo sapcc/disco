@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Designate IngresS Cname Operator (DISCO)
 
 [![REUSE status](https://api.reuse.software/badge/github.com/sapcc/disco)](https://api.reuse.software/info/github.com/sapcc/disco)
