@@ -9,7 +9,7 @@ mkShell {
   nativeBuildInputs = [
     addlicense
     go-licence-detector
-    go_1_25
+    go_1_26
     golangci-lint
     goreleaser
     gotools # goimports
@@ -18,6 +18,7 @@ mkShell {
     reuse
     setup-envtest
     syft
+    typos
     # keep this line if you use bash
     bashInteractive
   ];
