@@ -42,7 +42,7 @@ githubWorkflow:
     enabled: true
 
 makefile:
-  enabled: false
+  enabled: true
 
 renovate:
   enabled: true
@@ -97,3 +97,13 @@ renovate:
       extends: [
         "helpers:pinGitHubActionDigests"
       ]
+
+reuse:
+  annotations:
+    - paths:
+      - deploy/**/*.yaml
+      - deploy/**/config.env
+      - deploy/**/.helmignore
+      - PROJECT
+      SPDX-FileCopyrightText: SAP SE or an SAP affiliate company
+      SPDX-License-Identifier: Apache-2.0
