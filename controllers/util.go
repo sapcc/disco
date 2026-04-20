@@ -1,7 +1,11 @@
+// SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company
+// SPDX-License-Identifier: Apache-2.0
+
 package controllers
 
 import (
 	"fmt"
+	"slices"
 	"unicode"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -20,10 +24,8 @@ func isHandleObject(annotationKey string, o client.Object) bool {
 }
 
 func appendIfNotContains(theStringSlice []string, theString string) []string {
-	for _, s := range theStringSlice {
-		if s == theString {
-			return theStringSlice
-		}
+	if slices.Contains(theStringSlice, theString) {
+		return theStringSlice
 	}
 	return append(theStringSlice, theString)
 }
