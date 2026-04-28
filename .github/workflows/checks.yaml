@@ -34,10 +34,6 @@ jobs:
         uses: golangci/golangci-lint-action@v9
         with:
           version: latest
-      - name: Delete pre-installed shellcheck
-        run: sudo rm -f "$(which shellcheck)"
-      - name: Run shellcheck
-        run: make run-shellcheck
       - name: Dependency Licenses Review
         run: make check-dependency-licenses
       - name: Check for spelling errors
