@@ -52,7 +52,7 @@ kustomize: ## Download kustomize locally if necessary.
 	@test -f $(shell go env GOPATH)/bin/kustomize || (curl -s $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(shell go env GOPATH)/bin)
 
 .PHONY: manifests
-manifests: ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
+manifests: install-controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
 	controller-gen rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=deploy/kustomize/config/crd/bases output:rbac:artifacts:config=deploy/kustomize/config/rbac output:webhook:artifacts:config=deploy/kustomize/config/webhook
 
 .PHONY: fmt
@@ -64,7 +64,7 @@ vet: ## Run go vet against code.
 	go vet ./...
 
 .PHONY: test
-test: manifests generate fmt vet ## Run tests.
+test: manifests generate fmt vet install-setup-envtest ## Run tests.
 	KUBEBUILDER_ASSETS="$(shell setup-envtest use $(ENVTEST_K8S_VERSION) -p path)" go test ./... -coverprofile cover.out
 
 .PHONY: build-local
@@ -149,11 +149,17 @@ install-setup-envtest: FORCE
 
 # To add additional flags or values (before the default ones), specify the variable in the environment, e.g. `GO_BUILDFLAGS='-tags experimental' make`.
 # To override the default flags or values, specify the variable on the command line, e.g. `make GO_BUILDFLAGS='-tags experimental'`.
-GO_BUILDFLAGS +=
-GO_LDFLAGS += -X github.com/sapcc/disco/pkg/version.BuildDate=$(BUILD_DATE) -X github.com/sapcc/disco/pkg/version.GitBranch=$(GIT_BRANCH) -X github.com/sapcc/disco/pkg/version.GitCommit=$(GIT_COMMIT) -X github.com/sapcc/disco/pkg/version.GitState=$(GIT_STATE)
-GO_TESTFLAGS +=
-GO_TESTENV +=
-GO_BUILDENV +=
+GO_BUILDFLAGS += -mod vendor
+GO_LDFLAGS    += -X github.com/sapcc/disco/pkg/version.BuildDate=$(BUILD_DATE) -X github.com/sapcc/disco/pkg/version.GitBranch=$(GIT_BRANCH) -X github.com/sapcc/disco/pkg/version.GitCommit=$(GIT_COMMIT) -X github.com/sapcc/disco/pkg/version.GitState=$(GIT_STATE)
+GO_TESTFLAGS  +=
+GO_TESTENV    +=
+GO_BUILDENV   +=
+
+# Custom variables provided in Makefile.maker.yaml
+export BUILD_DATE = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+export GIT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+export GIT_COMMIT = $(shell git rev-parse --short HEAD)
+export GIT_STATE = $(shell if git diff --quiet; then echo clean; else echo dirty; fi)
 
 build-all: build/disco
 
@@ -182,13 +188,14 @@ GO_COVERPKGS := $(shell go list ./...)
 null :=
 space := $(null) $(null)
 comma := ,
+YEAR ?= $(shell date +%Y)
 
 check: FORCE static-check build/cover.html build-all
 	@printf "\e[1;32m>> All checks successful.\e[0m\n"
 
 generate: install-controller-gen
 	@printf "\e[1;36m>> controller-gen\e[0m\n"
-	@controller-gen crd rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=deploy/kustomize/config/crd/bases
+	@controller-gen crd rbac:roleName=manager-role webhook paths="./..." output:crd:artifacts:config=deploy/kustomize/config/crd/bases output:rbac:artifacts:config=config/rbac
 	@controller-gen object paths="./..."
 	@controller-gen applyconfiguration paths="./..."
 
@@ -199,7 +206,7 @@ run-golangci-lint: FORCE install-golangci-lint
 
 run-shellcheck: FORCE install-shellcheck
 	@printf "\e[1;36m>> shellcheck\e[0m\n"
-	@find .  -type f \( -name '*.bash' -o -name '*.ksh' -o -name '*.zsh' -o -name '*.sh' -o -name '*.shlib' \) -exec shellcheck  {} +
+	@find . \( -path './vendor/*' -prune \) -o -type f \( -name '*.bash' -o -name '*.ksh' -o -name '*.zsh' -o -name '*.sh' -o -name '*.shlib' \) -exec shellcheck  {} +
 
 run-typos: FORCE install-typos
 	@printf "\e[1;36m>> typos\e[0m\n"
@@ -232,8 +239,14 @@ static-check: FORCE
 build:
 	@mkdir $@
 
-tidy-deps: FORCE
+vendor: FORCE
 	go mod tidy
+	go mod vendor
+	go mod verify
+
+vendor-compat: FORCE
+	go mod tidy -compat=$(shell awk '$$1 == "go" { print $$2 }' < go.mod)
+	go mod vendor
 	go mod verify
 
 license-headers: FORCE install-addlicense install-reuse
@@ -314,7 +327,8 @@ help: FORCE
 	@printf "  \e[36mstatic-check\e[0m                 Run static code checks\n"
 	@printf "\n"
 	@printf "\e[1mDevelopment\e[0m\n"
-	@printf "  \e[36mtidy-deps\e[0m                    Run go mod tidy and go mod verify.\n"
+	@printf "  \e[36mvendor\e[0m                       Run go mod tidy, go mod verify, and go mod vendor.\n"
+	@printf "  \e[36mvendor-compat\e[0m                Same as 'make vendor' but go mod tidy will use '-compat' flag with the Go version from go.mod file as value.\n"
 	@printf "  \e[36mlicense-headers\e[0m              Add (or overwrite) license headers on all non-vendored source code files.\n"
 	@printf "  \e[36mcheck-dependency-licenses\e[0m    Check all dependency licenses using go-licence-detector.\n"
 	@printf "  \e[36mgoimports\e[0m                    Run goimports on all non-vendored .go files\n"

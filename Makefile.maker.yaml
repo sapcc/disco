@@ -131,7 +131,7 @@ verbatim: |
   	@test -f $(shell go env GOPATH)/bin/kustomize || (curl -s $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(shell go env GOPATH)/bin)
 
   .PHONY: manifests
-  manifests: ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
+  manifests: install-controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
   	controller-gen rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=deploy/kustomize/config/crd/bases output:rbac:artifacts:config=deploy/kustomize/config/rbac output:webhook:artifacts:config=deploy/kustomize/config/webhook
 
   .PHONY: fmt
@@ -143,7 +143,7 @@ verbatim: |
   	go vet ./...
 
   .PHONY: test
-  test: manifests generate fmt vet ## Run tests.
+  test: manifests generate fmt vet install-setup-envtest ## Run tests.
   	KUBEBUILDER_ASSETS="$(shell setup-envtest use $(ENVTEST_K8S_VERSION) -p path)" go test ./... -coverprofile cover.out
 
   .PHONY: build-local
