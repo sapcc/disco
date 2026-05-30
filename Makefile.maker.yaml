@@ -111,6 +111,17 @@ renovate:
       extends:
         - "helpers:pinGitHubActionDigests"
 
+reuse:
+  enabled: true
+  annotations:
+    - paths:
+        - PROJECT
+        - deploy/helm-chart/.helmignore
+        - deploy/kustomize/config/manager/config.env
+        - hack/boilerplate.go.txt
+      SPDX-FileCopyrightText: SAP SE or an SAP affiliate company
+      SPDX-License-Identifier: Apache-2.0
+
 verbatim: |
   # Image URL to use all building/pushing image targets
   IMG_REPO ?= ghcr.io/sapcc/disco

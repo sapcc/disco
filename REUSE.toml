@@ -25,3 +25,13 @@ path = [
 ]
 SPDX-FileCopyrightText = "SAP SE or an SAP affiliate company"
 SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = [
+  "PROJECT",
+  "deploy/helm-chart/.helmignore",
+  "deploy/kustomize/config/manager/config.env",
+  "hack/boilerplate.go.txt",
+]
+SPDX-FileCopyrightText = "SAP SE or an SAP affiliate company"
+SPDX-License-Identifier = "Apache-2.0"
