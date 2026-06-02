@@ -36,6 +36,10 @@ builds:
       - -X github.com/sapcc/go-api-declarations/bininfo.version={{ .Version }}
       - -X github.com/sapcc/go-api-declarations/bininfo.commit={{ .FullCommit  }}
       - -X github.com/sapcc/go-api-declarations/bininfo.buildDate={{ .CommitDate }} # use CommitDate instead of Date for reproducibility
+      - -X github.com/sapcc/disco/pkg/version.BuildDate={{.Env.BUILD_DATE}}
+      - -X github.com/sapcc/disco/pkg/version.GitBranch={{.Env.GIT_BRANCH}}
+      - -X github.com/sapcc/disco/pkg/version.GitCommit={{.Env.GIT_COMMIT}}
+      - -X github.com/sapcc/disco/pkg/version.GitState={{.Env.GIT_STATE}}
     main: ./
     # Set the modified timestamp on the output binary to ensure that builds are reproducible.
     mod_timestamp: "{{ .CommitTimestamp }}"
