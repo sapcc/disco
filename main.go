@@ -75,6 +75,10 @@ func main() {
 	flag.BoolVar(&isPrintVersionAndExit, "version", false,
 		"Print the version and exit")
 
+	var enableWebhook bool
+	flag.BoolVar(&enableWebhook, "enable-webhook", true,
+		"Enable the mutating webhook server. Set to false when running without cert-manager TLS certificates.")
+
 	opts := zap.Options{
 		Development: true,
 	}
@@ -97,17 +101,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+	mgrOpts := ctrl.Options{
 		Scheme: scheme,
 		Metrics: server.Options{
 			BindAddress: metricsAddr,
 		},
-		WebhookServer:           webhook.NewServer(webhook.Options{Port: 9443}),
 		HealthProbeBindAddress:  probeAddr,
 		LeaderElection:          true,
 		LeaderElectionID:        "disco.controller",
 		LeaderElectionNamespace: getEnvOrDefault("NAMESPACE", "kube-system"),
-	})
+	}
+	if enableWebhook {
+		mgrOpts.WebhookServer = webhook.NewServer(webhook.Options{Port: 9443})
+	}
+
+	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), mgrOpts)
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
@@ -120,9 +128,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = discov1.SetupWebhookWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create webhook", "webhook", "Record")
-		os.Exit(1)
+	if enableWebhook {
+		if err = discov1.SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Record")
+			os.Exit(1)
+		}
 	}
 
 	if err = (&controllers.IngressShimReconciler{
