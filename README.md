@@ -4,7 +4,7 @@
 [![GitHub Container Registry](https://img.shields.io/badge/GitHub%20Container%20Registry-disco-blue?logo=github&logoColor=white&style=flat)](https://github.com/sapcc/disco/pkgs/container/disco)
 
 
-The DISCO operator automatically discovers Ingresses in the Kubernetes cluster and creates corresponding CNAMEs in OpenStack Desginate.
+The DISCO operator automatically discovers Ingresses in the Kubernetes cluster and creates corresponding CNAMEs in OpenStack Designate.
 
 ## Features
 
