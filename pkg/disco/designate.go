@@ -19,6 +19,7 @@ package disco
 import (
 	"context"
 	"fmt"
+	"maps"
 	"os"
 	"strings"
 
@@ -80,9 +81,7 @@ func NewDNSV2ClientFromENV(ctx context.Context) (*DNSV2Client, error) {
 	if c.MoreHeaders == nil {
 		c.MoreHeaders = make(map[string]string, 0)
 	}
-	for k, v := range headersForAllDesignateRequests {
-		c.MoreHeaders[k] = v
-	}
+	maps.Copy(c.MoreHeaders, headersForAllDesignateRequests)
 	return &DNSV2Client{client: c}, nil
 }
 
