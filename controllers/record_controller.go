@@ -162,16 +162,19 @@ func (r *RecordReconciler) reconcileRecord(ctx context.Context, record *discov1.
 		if !isFound {
 			log.FromContext(ctx).Info("record does not exist in designate. creating it",
 				"zone", zone.Name, "name", host, "type", record.Spec.Type, "records", records[0], "ttl", defaultRecordTTL)
-			err := r.dnsV2Client.CreateRecordset(ctx, zone.ID, host, string(record.Spec.Type), record.Spec.Description, records, defaultRecordTTL)
-			return err
+			if err := r.dnsV2Client.CreateRecordset(ctx, zone.ID, host, string(record.Spec.Type), record.Spec.Description, records, defaultRecordTTL); err != nil {
+				return err
+			}
+			continue
 		}
 
 		// The recordset exists but needs updating.
 		if !isDesignateRecordsetEqualToRecord(recordset, record, host) {
 			log.FromContext(ctx).Info("updating record in designate",
 				"zone", zone.Name, "name", host, "type", record.Spec.Type, "records", records[0], "ttl", defaultRecordTTL)
-			err := r.dnsV2Client.UpdateRecordset(ctx, recordset.ZoneID, recordset.ID, record.Spec.Description, defaultRecordTTL, records)
-			return err
+			if err := r.dnsV2Client.UpdateRecordset(ctx, recordset.ZoneID, recordset.ID, record.Spec.Description, defaultRecordTTL, records); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
