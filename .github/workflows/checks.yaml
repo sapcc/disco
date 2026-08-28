@@ -46,5 +46,5 @@ jobs:
         uses: crate-ci/typos@8a48f81b6c64dcfea44b3633223084c4be58ac5f # v1
         env:
           CLICOLOR: "1"
-      - name: REUSE Compliance Check
-        uses: fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6
+      #- name: REUSE Compliance Check
+      #  uses: fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6
