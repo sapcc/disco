@@ -1,6 +1,6 @@
 module github.com/sapcc/disco
 
-go 1.24.0
+go 1.26
 
 require (
 	github.com/go-logr/logr v1.4.2
@@ -12,7 +12,7 @@ require (
 	k8s.io/api v0.33.0
 	k8s.io/apimachinery v0.33.1
 	k8s.io/client-go v0.33.0
-	k8s.io/utils v0.0.0-20250502105355-0f33e8f1c979
+	k8s.io/utils v0.0.0-20261023123148-ca04ba58ecab
 	sigs.k8s.io/controller-runtime v0.20.4
 )
 
